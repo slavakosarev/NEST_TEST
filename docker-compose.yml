@@ -4,12 +4,12 @@ services:
     container_name: test_project
     restart: always
     ports:
-      - '5432:5432'
+      - '${DB_PORT}:5432'
     environment:
-      - POSTGRES_HOST=localhost
-      - POSTGRES_PASSWORD=slava
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=postgres
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     command: postgres
 
   redis:

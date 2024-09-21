@@ -3,8 +3,9 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { UserModule } from './user/user.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import { SequelizeModule } from '@nestjs/sequelize'
+import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize'
 import config from './config'
+import { Dialect } from 'sequelize'
 
 @Module({
   imports: [
@@ -15,17 +16,24 @@ import config from './config'
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        dialect: 'postgres',
-        host: configService.get('host'),
-        port: configService.get('port'),
-        username: configService.get('username'),
-        password: configService.get('password'),
-        database: configService.get('database'),
-        synchronize: true,
-        autoLoadModels: true,
-        models: [],
-      }),
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<SequelizeModuleOptions> => {
+        const dbConfig = {
+          dialect: 'postgres' as Dialect, // Ensure the dialect is of type Dialect
+          host: configService.get('database.host'),
+          port: parseInt(configService.get('database.port'), 10),
+          username: configService.get('database.username'),
+          password: configService.get('database.password'),
+          database: configService.get('database.database'),
+
+          synchronize: true,
+          autoLoadModels: true,
+          models: [],
+        }
+        console.log('Database connection settings:', dbConfig)
+        return dbConfig
+      },
     }),
     UserModule,
   ],
