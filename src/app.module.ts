@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { UserModule } from './user/user.module'
+import { UserModule } from './user/users.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize'
 import config from './config'
 import { Dialect } from 'sequelize'
+import { User } from './user/models/user.model'
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { Dialect } from 'sequelize'
 
           synchronize: true,
           autoLoadModels: true,
-          models: [],
+          models: [User],
         }
         console.log('Database connection settings:', dbConfig)
         return dbConfig
