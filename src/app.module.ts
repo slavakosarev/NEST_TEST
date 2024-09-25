@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize'
+import { Dialect } from 'sequelize'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { UserModule } from './user/users.module'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize'
+import { AuthModule } from './auth/auth.module'
 import config from './config'
-import { Dialect } from 'sequelize'
 import { User } from './user/models/user.model'
+import { TokenModule } from './token/token.module'
+import { JwtStrategy } from './strategy'
 
 @Module({
   imports: [
@@ -27,7 +30,6 @@ import { User } from './user/models/user.model'
           username: configService.get('database.username'),
           password: configService.get('database.password'),
           database: configService.get('database.database'),
-
           synchronize: true,
           autoLoadModels: true,
           models: [User],
@@ -37,8 +39,10 @@ import { User } from './user/models/user.model'
       },
     }),
     UserModule,
+    AuthModule,
+    TokenModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}

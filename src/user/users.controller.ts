@@ -1,14 +1,28 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Patch, Req, UseGuards } from '@nestjs/common'
 import { UsersService } from './users.service'
-import { CreateUserDto } from './dto'
+import { UpdateUserDto } from './dto'
+import { JwtAuthGuard } from 'src/guards/jwt-guard'
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
 
 @Controller('users') // prefix: /users задает путь
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Post('create-user') // path: /users/create-user
-  createUser(@Body() dto: CreateUserDto) {
-    console.log(dto)
-    return this.userService.createUser(dto)
+  @ApiTags('API')
+  @ApiResponse({ status: 200, type: UpdateUserDto })
+  @UseGuards(JwtAuthGuard)
+  @Patch()
+  updateUser(@Body() dto: UpdateUserDto, @Req() req): Promise<UpdateUserDto> {
+    const user = req.user.userData
+    // console.log(user)
+    return this.userService.updateUser(dto, user.email)
+  }
+
+  @ApiTags('API')
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  deleteUser(@Req() req) {
+    const user = req.user.userData
+    return this.userService.deleteUser(user.email)
   }
 }
