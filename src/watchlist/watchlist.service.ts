@@ -14,18 +14,30 @@ export class WatchlistService {
   }
 
   async createAsset(user: any, dto: WatchlistDto): Promise<CreateUserResponse> {
-    const watchlist = await this.watchlistRepository.create({
-      userId: user.id, // Используем userId вместо user
-      name: dto.name,
-      assetId: dto.assetId,
-    })
-    return watchlist.toJSON()
+    try {
+      const asset = await this.watchlistRepository.create({
+        name: dto.name,
+        assetId: dto.assetId,
+        userId: user.id,
+      })
+      return {
+        user: user.id,
+        name: asset.name,
+        assetId: asset.assetId,
+      }
+    } catch (e) {
+      throw new Error(e)
+    }
   }
 
   async deleteAsset(userId: number, assetId: string): Promise<boolean> {
-    await this.watchlistRepository.destroy({
-      where: { userId: userId, id: assetId }, // Используем userId вместо user
-    })
-    return true
+    try {
+      await this.watchlistRepository.destroy({
+        where: { user: userId, id: assetId },
+      })
+      return true
+    } catch (e) {
+      throw new Error(e)
+    }
   }
 }

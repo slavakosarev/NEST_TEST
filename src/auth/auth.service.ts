@@ -15,21 +15,30 @@ export class AuthService {
   ) {}
 
   async registrationUser(dto: CreateUserDto): Promise<CreateUserDto> {
-    const user = await this.userService.findUserByEmail(dto.email)
-    if (user) throw new BadRequestException(AppErrors.UserAlreadyExist)
+    try {
+      const user = await this.userService.findUserByEmail(dto.email)
+      if (user) throw new BadRequestException(AppErrors.UserAlreadyExist)
 
-    return this.userService.createUser(dto)
+      return this.userService.createUser(dto)
+    } catch (e) {
+      throw new BadRequestException(e)
+    }
   }
-
   async loginUser(dto: UserLoginDto): Promise<AuthResponse> {
-    const user = await this.userService.findUserByEmail(dto.email)
-    if (!user) throw new BadRequestException(AppErrors.UserNotFound)
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password)
-    if (!isPasswordValid)
-      throw new BadRequestException(AppErrors.InvalidCredentials)
-    const publicUser = await this.userService.publicUser(dto.email)
-    const token = await this.tokenService.generateToken({ publicUser })
+    try {
+      const user = await this.userService.findUserByEmail(dto.email)
 
-    return { ...publicUser, token }
+      if (!user) throw new BadRequestException(AppErrors.UserNotFound)
+      const isPasswordValid = await bcrypt.compare(dto.password, user.password)
+
+      if (!isPasswordValid)
+        throw new BadRequestException(AppErrors.InvalidCredentials)
+      const publicUser = await this.userService.publicUser(dto.email)
+      const token = await this.tokenService.generateToken({ publicUser })
+
+      return { user: publicUser, token }
+    } catch (e) {
+      throw new BadRequestException(e)
+    }
   }
 }

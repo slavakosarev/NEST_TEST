@@ -14,7 +14,6 @@ export class UsersController {
   @Patch()
   updateUser(@Body() dto: UpdateUserDto, @Req() req): Promise<UpdateUserDto> {
     const user = req.user.publicUser
-    // console.log(user)
     return this.userService.updateUser(dto, user.email)
   }
 
