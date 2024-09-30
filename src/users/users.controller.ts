@@ -13,7 +13,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch()
   updateUser(@Body() dto: UpdateUserDto, @Req() req): Promise<UpdateUserDto> {
-    const user = req.user.userData
+    const user = req.user.publicUser
     // console.log(user)
     return this.userService.updateUser(dto, user.email)
   }
@@ -21,8 +21,8 @@ export class UsersController {
   @ApiTags('API')
   @UseGuards(JwtAuthGuard)
   @Delete()
-  deleteUser(@Req() req) {
-    const user = req.user.userData
+  deleteUser(@Req() req): Promise<boolean> {
+    const user = req.user.publicUser
     return this.userService.deleteUser(user.email)
   }
 }

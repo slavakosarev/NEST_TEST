@@ -2,14 +2,16 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize'
 import { Dialect } from 'sequelize'
+import config from './config'
+import { JwtStrategy } from './strategy'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { UserModule } from './user/users.module'
+import { UserModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
-import config from './config'
-import { User } from './user/models/user.model'
 import { TokenModule } from './token/token.module'
-import { JwtStrategy } from './strategy'
+import { WatchlistModule } from './watchlist/watchlist.module'
+import { User } from './users/models/user.model'
+import { Watchlist } from './watchlist/models/watchlist.model'
 
 @Module({
   imports: [
@@ -32,7 +34,7 @@ import { JwtStrategy } from './strategy'
           database: configService.get('database.database'),
           synchronize: true,
           autoLoadModels: true,
-          models: [User],
+          models: [User, Watchlist],
         }
         console.log('Database connection settings:', dbConfig)
         return dbConfig
@@ -41,6 +43,7 @@ import { JwtStrategy } from './strategy'
     UserModule,
     AuthModule,
     TokenModule,
+    WatchlistModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
