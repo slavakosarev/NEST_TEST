@@ -26,7 +26,6 @@ export class WatchlistController {
     @Req() req,
   ): Promise<CreateUserResponse> {
     const user = req.user.publicUser
-    console.log('USER:', user)
     return this.watchlistService.createAsset(user, assetDto)
   }
 
